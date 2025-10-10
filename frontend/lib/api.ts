@@ -65,10 +65,10 @@ export const authAPI = {
 
 // Tasks API
 export const tasksAPI = {
-  getAll: async (params?: {
-    label?: string;
-    completed?: boolean;
-  }): Promise<Task[]> => {
+  getAll: async (label?: string, completed?: boolean): Promise<Task[]> => {
+    const params: any = {};
+    if (label) params.label = label;
+    if (completed !== undefined) params.completed = completed;
     const response = await api.get<Task[]>("/tasks", { params });
     return response.data;
   },

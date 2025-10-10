@@ -1,17 +1,18 @@
 "use client";
 
-import { Task } from "@/types";
+import { Task, Label } from "@/types";
 import { format } from "date-fns";
 import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
+  labels: Label[];
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
   onToggleComplete: (id: string, completed: boolean) => void;
 }
 
-export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: TaskCardProps) {
+export default function TaskCard({ task, labels, onEdit, onDelete, onToggleComplete }: TaskCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const getPriorityColor = (priority: string) => {
@@ -25,6 +26,11 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
       default:
         return "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-600";
     }
+  };
+
+  const getLabelName = (labelId: string) => {
+    const label = labels.find((l) => l.id === labelId);
+    return label?.name || labelId;
   };
 
   const handleDelete = async () => {
@@ -42,8 +48,10 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition ${
-        task.completed ? "opacity-60" : ""
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md border p-4 hover:shadow-lg transition ${
+        task.completed
+          ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/10"
+          : "border-gray-200 dark:border-gray-700"
       } ${isDeleting ? "opacity-50" : ""}`}
     >
       <div className="flex items-start gap-3">
@@ -51,20 +59,40 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
           type="checkbox"
           checked={task.completed}
           onChange={(e) => onToggleComplete(task.id, e.target.checked)}
-          className="mt-1 h-5 w-5 text-blue-600 dark:text-blue-500 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+          className="mt-1 h-5 w-5 text-blue-600 dark:text-blue-500 rounded focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 cursor-pointer"
         />
         <div className="flex-1">
-          <h3
-            className={`text-lg font-semibold text-gray-900 dark:text-white ${
-              task.completed ? "line-through" : ""
-            }`}
-          >
-            {task.title}
-          </h3>
+          <div className="flex items-center gap-2 mb-1">
+            <h3
+              className={`text-lg font-semibold text-gray-900 dark:text-white ${
+                task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""
+              }`}
+            >
+              {task.title}
+            </h3>
+            {task.completed && (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700 font-semibold">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Completed
+              </span>
+            )}
+          </div>
           {task.description && (
-            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm">{task.description}</p>
+            <p className={`mt-1 text-sm ${task.completed ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-300"}`}>
+              {task.description}
+            </p>
           )}
           <div className="flex flex-wrap gap-2 mt-3">
+            {!task.completed && (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700 font-semibold">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                Pending
+              </span>
+            )}
             <span
               className={`text-xs px-2 py-1 rounded-full border font-medium ${getPriorityColor(
                 task.priority
@@ -81,12 +109,12 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
             >
               {format(new Date(task.deadline), "MMM dd, yyyy")}
             </span>
-            {task.labels.map((label, index) => (
+            {task.labels.map((labelId, index) => (
               <span
                 key={index}
                 className="text-xs px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-medium"
               >
-                {label}
+                {getLabelName(labelId)}
               </span>
             ))}
           </div>

@@ -68,11 +68,11 @@ export default function TaskModal({ isOpen, onClose, onSubmit, task, labels }: T
     onClose();
   };
 
-  const toggleLabel = (labelName: string) => {
+  const toggleLabel = (labelId: string) => {
     setSelectedLabels((prev) =>
-      prev.includes(labelName)
-        ? prev.filter((l) => l !== labelName)
-        : [...prev, labelName]
+      prev.includes(labelId)
+        ? prev.filter((l) => l !== labelId)
+        : [...prev, labelId]
     );
   };
 
@@ -175,9 +175,9 @@ export default function TaskModal({ isOpen, onClose, onSubmit, task, labels }: T
                   <button
                     key={label.id}
                     type="button"
-                    onClick={() => toggleLabel(label.name)}
+                    onClick={() => toggleLabel(label.id)}
                     className={`px-3 py-1 rounded-full text-sm border transition font-medium ${
-                      selectedLabels.includes(label.name)
+                      selectedLabels.includes(label.id)
                         ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}

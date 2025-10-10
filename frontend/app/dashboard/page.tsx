@@ -200,7 +200,7 @@ export default function DashboardPage() {
                 >
                   <option value="">All Labels</option>
                   {labels.map((label) => (
-                    <option key={label.id} value={label.name}>
+                    <option key={label.id} value={label.id}>
                       {label.name}
                     </option>
                   ))}
@@ -262,6 +262,7 @@ export default function DashboardPage() {
               <TaskCard
                 key={task.id}
                 task={task}
+                labels={labels}
                 onEdit={handleEditTask}
                 onDelete={handleDeleteTask}
                 onToggleComplete={handleToggleComplete}
